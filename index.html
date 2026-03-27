@@ -3,113 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudMoon 学校用 Proxy 一鍵生成</title>
+    <title>学校 任意URL 迂回</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
-            background: #0f0f0f; 
-            color: #fff; 
+            background: #111; 
+            color: #0f0; 
             padding: 20px; 
-            max-width: 620px; 
-            margin: 0 auto; 
-            text-align: center;
+            text-align: center; 
+            margin: 0;
         }
-        h1 { color: #00ff9d; margin-bottom: 10px; }
-        .info { color: #aaa; margin-bottom: 30px; }
-        pre { 
-            background: #1a1a1a; 
-            padding: 18px; 
-            border-radius: 12px; 
-            text-align: left; 
-            overflow: auto; 
-            font-size: 14px;
-            margin: 20px 0;
+        h1 { color: #0f0; }
+        input { 
+            width: 80%; 
+            padding: 15px; 
+            font-size: 18px; 
+            margin: 20px 0; 
+            background: #222; 
+            color: #0f0; 
+            border: 2px solid #0f0;
         }
         button { 
-            background: #00ff9d; 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            background: #0f0; 
             color: #000; 
             border: none; 
-            padding: 14px 24px; 
-            margin: 10px; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            font-weight: bold; 
             cursor: pointer;
         }
-        button:hover { background: #00cc7a; }
-        .success { color: #00ff9d; }
+        iframe { 
+            width: 95%; 
+            height: 80vh; 
+            border: 2px solid #0f0; 
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <h1>🏫 CloudMoon 学校迂回ツール</h1>
-    <p class="info">ページを開いたら自動でConfig生成<br>沖縄学校ネットワーク専用（Hysteria2 + Salamander）</p>
-
-    <button onclick="copyConfig()">📋 Configをコピー</button>
-    <button onclick="downloadConfig()">⬇️ config.json をダウンロード</button>
-
-    <div id="result"></div>
+    <h1>🏫 学校迂回ブラウザ</h1>
+    <p>URLを入力してGoを押すだけ（Hysteria2接続推奨）</p>
+    
+    <input type="text" id="url" placeholder="https://web.cloudmoonapp.com/ または 任意のサイト" value="https://web.cloudmoonapp.com/">
+    <br>
+    <button onclick="go()">🚀 Go</button>
+    
+    <iframe id="frame" style="display:none;"></iframe>
 
     <script>
-        // ここに固定値（自動入力）
-        const fixedServer = "your-render-service.onrender.com:443";   // ← ここをあなたの実際のRender URLに変更！
-        const fixedPassword = "OkinawaSchoolCloudMoon2026!@#StrongPass";
-
-        function generateConfig() {
-            const config = {
-                "server": fixedServer,
-                "protocol": "hysteria2",
-                "auth": fixedPassword,
-                "obfs": {
-                    "type": "salamander",
-                    "password": fixedPassword
-                },
-                "tls": {
-                    "insecure": true,
-                    "sni": "www.cloudflare.com"
-                },
-                "quic": {
-                    "initStreamReceiveWindow": 8388608,
-                    "maxStreamReceiveWindow": 8388608,
-                    "hopInterval": "30s"
-                },
-                "routing": {
-                    "domain": ["cloudmoonapp.com", "*.cloudmoonapp.com"]
-                }
-            };
-
-            return JSON.stringify(config, null, 2);
+        function go() {
+            let url = document.getElementById('url').value.trim();
+            if (!url) {
+                alert("URLを入力してください！");
+                return;
+            }
+            if (!url.startsWith('http')) {
+                url = 'https://' + url;
+            }
+            const frame = document.getElementById('frame');
+            frame.src = url;
+            frame.style.display = 'block';
         }
 
-        // ページ読み込み時に自動生成
-        window.onload = function() {
-            const configStr = generateConfig();
-            document.getElementById('result').innerHTML = `
-                <h3>✅ 自動生成されたConfig（Nekoray / NekoBox用）</h3>
-                <pre>${configStr}</pre>
-                <p class="success">※ CloudMoonだけProxy経由（Split Tunneling）に設定してください。</p>
-                <p>サーバーアドレス: ${fixedServer}</p>
-            `;
-            window.currentConfig = configStr;
-        };
-
-        function copyConfig() {
-            if (!window.currentConfig) return;
-            navigator.clipboard.writeText(window.currentConfig).then(() => {
-                alert("✅ Configをクリップボードにコピーしました！\nNekorayに貼り付けて接続してください。");
-            });
-        }
-
-        function downloadConfig() {
-            if (!window.currentConfig) return;
-            const blob = new Blob([window.currentConfig], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'cloudmoon-hysteria2-config.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
+        // EnterキーでもGo
+        document.getElementById('url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') go();
+        });
     </script>
 </body>
 </html>
