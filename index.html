@@ -6,84 +6,90 @@
     <title>学校迂回</title>
     <style>
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: "Google Sans", Arial, sans-serif; 
             background: #ffffff; 
             color: #202124; 
             margin: 0; 
-            padding: 40px 20px; 
+            padding: 60px 20px 20px; 
             text-align: center; 
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
-        .logo { font-size: 90px; margin-bottom: 20px; }
+        .logo { 
+            font-size: 110px; 
+            margin-bottom: 30px; 
+        }
         h1 { 
             color: #1a73e8; 
-            font-size: 32px; 
-            margin-bottom: 8px;
-            font-weight: normal;
+            font-size: 36px; 
+            margin: 0 0 8px 0;
+            font-weight: 400;
         }
         input { 
-            width: 580px; 
-            max-width: 90%; 
-            padding: 16px 24px; 
+            width: 620px; 
+            max-width: 92%; 
+            padding: 18px 24px; 
             font-size: 18px; 
             border: 1px solid #dfe1e5; 
             border-radius: 50px; 
             outline: none;
             box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            margin-bottom: 20px;
         }
-        input:focus { border-color: #1a73e8; box-shadow: 0 1px 8px rgba(26,115,232,0.3); }
+        input:focus { 
+            border-color: #1a73e8; 
+            box-shadow: 0 1px 8px rgba(26,115,232,0.4); 
+        }
         button { 
-            margin-top: 25px;
-            padding: 14px 36px; 
+            padding: 14px 40px; 
             font-size: 17px; 
             background: #1a73e8; 
-            color: white; 
+            color: #fff; 
             border: none; 
             border-radius: 8px; 
             cursor: pointer;
+            margin: 10px;
         }
         button:hover { background: #185abc; }
-        p { color: #5f6368; font-size: 15px; margin: 25px 0 10px; }
+        .tip { color: #5f6368; font-size: 14px; margin-top: 40px; }
     </style>
 </head>
 <body>
     <div class="logo">🔒</div>
     <h1>学校迂回ブラウザ</h1>
-    <p>URLを入力してGo → 履歴にほとんど残りません</p>
+    <p style="color:#5f6368; font-size:16px;">URLを入力してGoするだけ</p>
     
-    <input type="text" id="url" placeholder="https://web.cloudmoonapp.com/ または任意のサイト" value="https://web.cloudmoonapp.com/" autocomplete="off">
-    <br>
-    <button onclick="goNewTab()">🚀 Go（新しいタブで開く・履歴残さない）</button>
+    <input type="text" id="url" placeholder="https://web.cloudmoonapp.com/" value="https://web.cloudmoonapp.com/" autocomplete="off">
+    
+    <div>
+        <button onclick="goNewTab()">🚀 Go（新しいタブ・履歴残さない）</button>
+    </div>
+
+    <div class="tip">新しいタブで開くので、このページの履歴はほとんど残りません</div>
 
     <script>
         window.onload = function() {
-            history.replaceState(null, "学校迂回", "/");  // 履歴偽装
+            history.replaceState(null, "学校", "/");
             document.getElementById('url').focus();
         };
 
         function getUrl() {
-            let url = document.getElementById('url').value.trim();
-            if (!url) {
+            let u = document.getElementById('url').value.trim();
+            if (!u) {
                 alert("URLを入力してください！");
                 return null;
             }
-            if (!url.startsWith('http')) url = 'https://' + url;
-            return url;
+            if (!u.startsWith('http')) u = 'https://' + u;
+            return u;
         }
 
         function goNewTab() {
             const url = getUrl();
             if (!url) return;
-            window.open(url, '_blank');   // 新しいタブ → 現在の履歴に追加されない
-            document.getElementById('url').value = '';  // 入力クリア
+            window.open(url, '_blank');
+            document.getElementById('url').value = ''; // 入力クリア
         }
 
-        // Enterキー対応
-        document.getElementById('url').addEventListener('keypress', function(e) {
+        document.getElementById('url').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') goNewTab();
         });
     </script>
