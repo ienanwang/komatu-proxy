@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudMoon 学校用 Proxy 配置生成器</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e1e; color: #fff; padding: 20px; max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; color: #00ff9d; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 16px; }
+        input { background: #333; color: #fff; }
+        button { background: #00ff9d; color: #000; font-weight: bold; cursor: pointer; }
+        button:hover { background: #00cc7a; }
+        pre { background: #222; padding: 15px; border-radius: 8px; overflow: auto; white-space: pre-wrap; }
+        .result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🏫 CloudMoon 学校迂回ツール</h1>
+    <p style="text-align:center;">沖縄学校ネットワーク専用（Hysteria2）</p>
+
+    <label>サーバーアドレス（例: your-render.onrender.com:443）</label>
+    <input type="text" id="server" placeholder="your-service.onrender.com:443" value="">
+
+    <label>認証パスワード</label>
+    <input type="password" id="password" placeholder="強力なパスワード">
+
+    <label>Obfs (Salamander) パスワード</label>
+    <input type="password" id="obfs" placeholder="Salamander_Okinawa_CloudMoon_2026!">
+
+    <button onclick="generateConfig()">📋 Configを生成</button>
+    <button onclick="copyConfig()">📋 Configをコピー</button>
+    <button onclick="downloadConfig()">⬇️ config.json をダウンロード</button>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function generateConfig() {
+            const server = document.getElementById('server').value || 'your-render.onrender.com:443';
+            const password = document.getElementById('password').value || 'OkinawaSchoolCloudMoon2026StrongPass!@#';
+            const obfsPass = document.getElementById('obfs').value || 'Salamander_Okinawa_CloudMoon_2026!StrongObfsPass';
+
+            const config = {
+                "server": server,
+                "protocol": "hysteria2",
+                "auth": password,
+                "obfs": {
+                    "type": "salamander",
+                    "password": obfsPass
+                },
+                "tls": {
+                    "insecure": true,   // Render簡易TLSの場合
+                    "sni": "www.cloudflare.com"
+                },
+                "quic": {
+                    "initStreamReceiveWindow": 8388608,
+                    "hopInterval": "30s"
+                },
+                "routing": {
+                    "domain": ["cloudmoonapp.com", "*.cloudmoonapp.com"]
+                }
+            };
+
+            const configStr = JSON.stringify(config, null, 2);
+            document.getElementById('result').innerHTML = `
+                <h3>生成されたConfig（Nekoray / NekoBox用）</h3>
+                <pre>${configStr}</pre>
+                <p>※ Split Tunnelingで cloudmoonapp.com だけProxyに設定してください。</p>
+            `;
+            window.currentConfig = configStr;
+        }
+
+        function copyConfig() {
+            if (!window.currentConfig) {
+                alert("先に「Configを生成」を押してください！");
+                return;
+            }
+            navigator.clipboard.writeText(window.currentConfig).then(() => {
+                alert("✅ Configをクリップボードにコピーしました！ Nekorayに貼り付けてください。");
+            });
+        }
+
+        function downloadConfig() {
+            if (!window.currentConfig) {
+                alert("先に「Configを生成」を押してください！");
+                return;
+            }
+            const blob = new Blob([window.currentConfig], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hysteria2-cloudmoon-config.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
