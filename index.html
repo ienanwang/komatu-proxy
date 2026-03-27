@@ -3,57 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudMoon 学校用 Proxy 配置生成器</title>
+    <title>CloudMoon 学校用 Proxy 一鍵生成</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #1e1e1e; color: #fff; padding: 20px; max-width: 600px; margin: 0 auto; }
-        h1 { text-align: center; color: #00ff9d; }
-        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 16px; }
-        input { background: #333; color: #fff; }
-        button { background: #00ff9d; color: #000; font-weight: bold; cursor: pointer; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #0f0f0f; 
+            color: #fff; 
+            padding: 20px; 
+            max-width: 620px; 
+            margin: 0 auto; 
+            text-align: center;
+        }
+        h1 { color: #00ff9d; margin-bottom: 10px; }
+        .info { color: #aaa; margin-bottom: 30px; }
+        pre { 
+            background: #1a1a1a; 
+            padding: 18px; 
+            border-radius: 12px; 
+            text-align: left; 
+            overflow: auto; 
+            font-size: 14px;
+            margin: 20px 0;
+        }
+        button { 
+            background: #00ff9d; 
+            color: #000; 
+            border: none; 
+            padding: 14px 24px; 
+            margin: 10px; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer;
+        }
         button:hover { background: #00cc7a; }
-        pre { background: #222; padding: 15px; border-radius: 8px; overflow: auto; white-space: pre-wrap; }
-        .result { margin-top: 20px; }
+        .success { color: #00ff9d; }
     </style>
 </head>
 <body>
     <h1>🏫 CloudMoon 学校迂回ツール</h1>
-    <p style="text-align:center;">沖縄学校ネットワーク専用（Hysteria2）</p>
+    <p class="info">ページを開いたら自動でConfig生成<br>沖縄学校ネットワーク専用（Hysteria2 + Salamander）</p>
 
-    <label>サーバーアドレス（例: your-render.onrender.com:443）</label>
-    <input type="text" id="server" placeholder="your-service.onrender.com:443" value="">
-
-    <label>認証パスワード</label>
-    <input type="password" id="password" placeholder="強力なパスワード">
-
-    <label>Obfs (Salamander) パスワード</label>
-    <input type="password" id="obfs" placeholder="Salamander_Okinawa_CloudMoon_2026!">
-
-    <button onclick="generateConfig()">📋 Configを生成</button>
     <button onclick="copyConfig()">📋 Configをコピー</button>
     <button onclick="downloadConfig()">⬇️ config.json をダウンロード</button>
 
-    <div class="result" id="result"></div>
+    <div id="result"></div>
 
     <script>
-        function generateConfig() {
-            const server = document.getElementById('server').value || 'your-render.onrender.com:443';
-            const password = document.getElementById('password').value || 'OkinawaSchoolCloudMoon2026StrongPass!@#';
-            const obfsPass = document.getElementById('obfs').value || 'Salamander_Okinawa_CloudMoon_2026!StrongObfsPass';
+        // ここに固定値（自動入力）
+        const fixedServer = "your-render-service.onrender.com:443";   // ← ここをあなたの実際のRender URLに変更！
+        const fixedPassword = "OkinawaSchoolCloudMoon2026!@#StrongPass";
 
+        function generateConfig() {
             const config = {
-                "server": server,
+                "server": fixedServer,
                 "protocol": "hysteria2",
-                "auth": password,
+                "auth": fixedPassword,
                 "obfs": {
                     "type": "salamander",
-                    "password": obfsPass
+                    "password": fixedPassword
                 },
                 "tls": {
-                    "insecure": true,   // Render簡易TLSの場合
+                    "insecure": true,
                     "sni": "www.cloudflare.com"
                 },
                 "quic": {
                     "initStreamReceiveWindow": 8388608,
+                    "maxStreamReceiveWindow": 8388608,
                     "hopInterval": "30s"
                 },
                 "routing": {
@@ -61,35 +77,35 @@
                 }
             };
 
-            const configStr = JSON.stringify(config, null, 2);
-            document.getElementById('result').innerHTML = `
-                <h3>生成されたConfig（Nekoray / NekoBox用）</h3>
-                <pre>${configStr}</pre>
-                <p>※ Split Tunnelingで cloudmoonapp.com だけProxyに設定してください。</p>
-            `;
-            window.currentConfig = configStr;
+            return JSON.stringify(config, null, 2);
         }
 
+        // ページ読み込み時に自動生成
+        window.onload = function() {
+            const configStr = generateConfig();
+            document.getElementById('result').innerHTML = `
+                <h3>✅ 自動生成されたConfig（Nekoray / NekoBox用）</h3>
+                <pre>${configStr}</pre>
+                <p class="success">※ CloudMoonだけProxy経由（Split Tunneling）に設定してください。</p>
+                <p>サーバーアドレス: ${fixedServer}</p>
+            `;
+            window.currentConfig = configStr;
+        };
+
         function copyConfig() {
-            if (!window.currentConfig) {
-                alert("先に「Configを生成」を押してください！");
-                return;
-            }
+            if (!window.currentConfig) return;
             navigator.clipboard.writeText(window.currentConfig).then(() => {
-                alert("✅ Configをクリップボードにコピーしました！ Nekorayに貼り付けてください。");
+                alert("✅ Configをクリップボードにコピーしました！\nNekorayに貼り付けて接続してください。");
             });
         }
 
         function downloadConfig() {
-            if (!window.currentConfig) {
-                alert("先に「Configを生成」を押してください！");
-                return;
-            }
+            if (!window.currentConfig) return;
             const blob = new Blob([window.currentConfig], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'hysteria2-cloudmoon-config.json';
+            a.download = 'cloudmoon-hysteria2-config.json';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
