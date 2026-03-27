@@ -1,0 +1,29 @@
+listen: :443
+
+tls:
+  cert: /etc/hysteria/cert.pem   # Renderで自己署名 or envで対応（簡易版）
+  key: /etc/hysteria/key.pem
+
+masquerade:
+  type: proxy
+  proxy:
+    url: https://www.cloudflare.com
+    rewriteHost: true
+
+auth:
+  type: password
+  password: "OkinawaSchoolCloudMoon2026StrongPass!@#"
+
+obfs:
+  type: salamander
+  salamander:
+    password: "Salamander_Okinawa_CloudMoon_2026!StrongObfsPass"
+
+# パケットロス対策（学校Wi-Fi用）
+quic:
+  initStreamReceiveWindow: 8388608
+  maxStreamReceiveWindow: 8388608
+  initConnReceiveWindow: 67108864
+  maxConnReceiveWindow: 67108864
+
+hopInterval: 30s
