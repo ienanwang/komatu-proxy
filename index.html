@@ -18,53 +18,50 @@
             align-items: center;
             justify-content: center;
         }
+        .logo { font-size: 90px; margin-bottom: 20px; }
         h1 { 
             color: #1a73e8; 
             font-size: 32px; 
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: normal;
         }
-        .logo { font-size: 80px; margin-bottom: 20px; }
         input { 
             width: 580px; 
             max-width: 90%; 
-            padding: 16px 20px; 
+            padding: 16px 24px; 
             font-size: 18px; 
             border: 1px solid #dfe1e5; 
-            border-radius: 24px; 
+            border-radius: 50px; 
             outline: none;
-            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
         }
-        input:focus { border-color: #1a73e8; }
+        input:focus { border-color: #1a73e8; box-shadow: 0 1px 8px rgba(26,115,232,0.3); }
         button { 
-            margin-top: 20px;
-            padding: 12px 32px; 
-            font-size: 16px; 
+            margin-top: 25px;
+            padding: 14px 36px; 
+            font-size: 17px; 
             background: #1a73e8; 
             color: white; 
             border: none; 
-            border-radius: 4px; 
+            border-radius: 8px; 
             cursor: pointer;
         }
         button:hover { background: #185abc; }
-        p { color: #5f6368; font-size: 14px; margin-top: 30px; }
+        p { color: #5f6368; font-size: 15px; margin: 25px 0 10px; }
     </style>
 </head>
 <body>
     <div class="logo">🔒</div>
     <h1>学校迂回ブラウザ</h1>
-    <p>URLを入力してGo → 履歴に残りません</p>
+    <p>URLを入力してGo → 履歴にほとんど残りません</p>
     
     <input type="text" id="url" placeholder="https://web.cloudmoonapp.com/ または任意のサイト" value="https://web.cloudmoonapp.com/" autocomplete="off">
     <br>
-    <button onclick="goNewTab()">🚀 Go（新しいタブ・履歴残さない）</button>
+    <button onclick="goNewTab()">🚀 Go（新しいタブで開く・履歴残さない）</button>
 
     <script>
-        // ページロード時に履歴を完全に置き換え（戻るボタンでもproxyページに戻りにくく）
         window.onload = function() {
-            if (window.history.replaceState) {
-                history.replaceState(null, "学校迂回", "/");
-            }
+            history.replaceState(null, "学校迂回", "/");  // 履歴偽装
             document.getElementById('url').focus();
         };
 
@@ -81,12 +78,8 @@
         function goNewTab() {
             const url = getUrl();
             if (!url) return;
-            
-            // 新しいタブで開く（現在のページの履歴に一切追加されない）
-            window.open(url, '_blank');
-            
-            // 入力欄クリア（痕跡を減らす）
-            document.getElementById('url').value = '';
+            window.open(url, '_blank');   // 新しいタブ → 現在の履歴に追加されない
+            document.getElementById('url').value = '';  // 入力クリア
         }
 
         // Enterキー対応
