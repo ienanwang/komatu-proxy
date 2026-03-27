@@ -1,0 +1,13 @@
+services:
+  - type: private-service   # Private Service推奨（外部公開せずproxy用）
+    name: hysteria2-proxy
+    runtime: docker
+    repo: https://github.com/あなたのユーザー名/school-cloudmoon-proxy   # 自分のリポに変更
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: HYSTERIA_PASSWORD
+        value: "OkinawaSchoolCloudMoon2026StrongPass!@#"
+      - key: OBFS_PASSWORD
+        value: "Salamander_Okinawa_CloudMoon_2026!StrongObfsPass"
+    plan: free   # 最初は無料でテスト、有料に上げて安定化
+    region: singapore   # または tokyo/ohio（沖縄から遅延少ないアジア・US西海岸）
